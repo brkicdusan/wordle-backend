@@ -10,20 +10,22 @@ RUN go mod download
 
 COPY . ./
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /discord-bot
+RUN CGO_ENABLED=0 GOOS=linux make build
 
 # Run the tests in the container
 FROM build-stage AS run-test-stage
-RUN go test -v ./...
+RUN make test
 
 # Deploy the application binary into a lean image
 FROM gcr.io/distroless/base-debian11 AS build-release-stage
 
 WORKDIR /
 
-COPY --from=build-stage /discord-bot /discord-bot
+COPY --from=build-stage /main /main
 
 USER nonroot:nonroot
+
+EXPOSE 9001
 
 ENTRYPOINT ["/main"]
 
