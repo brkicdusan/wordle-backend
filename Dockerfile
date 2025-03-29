@@ -10,7 +10,7 @@ RUN go mod download
 
 COPY . ./
 
-RUN CGO_ENABLED=0 GOOS=linux make build
+RUN CGO_ENABLED=0 GOOS=linux go build -o /main cmd/api/main.go
 
 # Run the tests in the container
 FROM build-stage AS run-test-stage
