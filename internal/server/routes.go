@@ -2,10 +2,13 @@ package server
 
 import (
 	"net/http"
+	"wordle-backend/internal/words"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
+
+var wg *words.WordGen
 
 func (s *Server) RegisterRoutes() http.Handler {
 	e := echo.New()
@@ -20,13 +23,15 @@ func (s *Server) RegisterRoutes() http.Handler {
 		MaxAge:           300,
 	}))
 
+	wg = words.NewWordGen()
+
 	e.GET("/", s.EnglishHandler)
 
 	return e
 }
 
 func (s *Server) EnglishHandler(c echo.Context) error {
-	resp := "hello"
+	resp := wg.RandomWord().Word
 
 	return c.JSON(http.StatusOK, resp)
 }
