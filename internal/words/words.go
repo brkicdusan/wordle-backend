@@ -20,8 +20,8 @@ type WordGen struct {
 	list []Word
 }
 
-func NewWordGen() *WordGen {
-	list := generateList("assets/englishwords.txt")
+func NewWordGen(lang string) *WordGen {
+	list := generateList("assets/" + lang + "words.txt")
 	return &WordGen{
 		list,
 	}

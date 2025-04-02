@@ -8,7 +8,10 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-var wg *words.WordGen
+var (
+	wg_en *words.WordGen
+	wg_sr *words.WordGen
+)
 
 func (s *Server) RegisterRoutes() http.Handler {
 	e := echo.New()
@@ -23,15 +26,23 @@ func (s *Server) RegisterRoutes() http.Handler {
 		MaxAge:           300,
 	}))
 
-	wg = words.NewWordGen()
+	wg_en = words.NewWordGen("english")
+	wg_sr = words.NewWordGen("serbian")
 
-	e.GET("/", s.EnglishHandler)
+	e.GET("/en", s.EnglishHandler)
+	e.GET("/sr", s.SerbianHandler)
 
 	return e
 }
 
 func (s *Server) EnglishHandler(c echo.Context) error {
-	resp := wg.RandomWord().Word
+	resp := wg_en.RandomWord().Word
+
+	return c.JSON(http.StatusOK, resp)
+}
+
+func (s *Server) SerbianHandler(c echo.Context) error {
+	resp := wg_sr.RandomWord().Word
 
 	return c.JSON(http.StatusOK, resp)
 }

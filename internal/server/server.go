@@ -30,7 +30,7 @@ func NewServer() *http.Server {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	log.Printf("Server started on port %d", port)
+	log.Printf("Server started on %v", server.Addr)
 
 	return server
 }
