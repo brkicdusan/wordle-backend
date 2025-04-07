@@ -9,6 +9,8 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/mileusna/srb"
 )
 
 type Word struct {
@@ -21,27 +23,33 @@ type WordGen struct {
 }
 
 func NewWordGen(lang string) *WordGen {
-	list := generateList("assets/" + lang + "words.txt")
+	list := generateList(lang)
+
 	return &WordGen{
 		list,
 	}
 }
 
-func generateList(source_file string) []Word {
+func generateList(lang string) []Word {
+	source_file := "assets/" + lang + "words.txt"
 	list, err := getWordList(source_file)
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
 
-	list = filterInvalid(list)
+	list = filterInvalid(list, lang)
 
 	return list
 }
 
-func filterInvalid(wordlist []Word) []Word {
+func filterInvalid(wordlist []Word, lang string) []Word {
 	newWordlist := []Word{}
 
 	for _, e := range wordlist {
+		if lang == "serbian" {
+			e.Word = srb.ToCyr(e.Word)
+		}
+
 		if !IsLetter(e.Word) {
 			continue
 		}
