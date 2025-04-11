@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"strconv"
 	"wordle-backend/internal/words"
 
 	"github.com/labstack/echo/v4"
@@ -31,6 +32,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.GET("/en", s.EnglishHandler)
 	e.GET("/sr", s.SerbianHandler)
+	e.GET("/en/:count", s.EnglishMultiHandler)
+	e.GET("/sr/:count", s.SerbianMultiHandler)
 
 	return e
 }
@@ -45,4 +48,28 @@ func (s *Server) SerbianHandler(c echo.Context) error {
 	resp := wg_sr.RandomWord().Word
 
 	return c.JSON(http.StatusOK, resp)
+}
+
+func (s *Server) EnglishMultiHandler(c echo.Context) error {
+	return MultiHandler(wg_en, c)
+}
+
+func (s *Server) SerbianMultiHandler(c echo.Context) error {
+	return MultiHandler(wg_sr, c)
+}
+
+func MultiHandler(wg *words.WordGen, c echo.Context) error {
+	countStr := c.Param("count")
+
+	count, err := strconv.Atoi(countStr)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid count.")
+	}
+
+	list, err := wg.GetN(count)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid count.")
+	}
+
+	return c.JSON(http.StatusOK, list)
 }
